@@ -1,0 +1,209 @@
+import pandas as pd
+import os
+
+
+class ArmyUnit:
+    def __init__ (self, name, points, move, tough, save, wounds, leader, obj_con):
+        self.name = name
+        self.points = points
+        self.move = move
+        self.tough = tough
+        self.save = save
+        self.wound = wounds
+        self.leader = leader
+        self.obj_con = obj_con
+
+    def display_info(self):
+        unit_info = f'''
+              Name: {self.name}
+              Points: {self.points}
+              Movement: {self.move}\"
+              Toughness: {self.tough}
+              Save: {self.save}
+              Wounds: {self.wound}
+              Leadership Score: {self.leader}
+              Objective Control: {self.obj_con}
+              '''
+        return unit_info
+              
+    def create_entry():
+        name = input("What unit are you adding? ")
+        points = input("What is the unit's point value? ")
+        move = input("What is the unit's movement? ")
+        tough = input("What is the unit's toughness? ")
+        save = input("What is the unit's save? ")
+        wounds = input("What is the unit's wounds? ")
+        leader = input("What is the unit's leadership score? ")
+        obj_con = input("What is the unit's objective control? ")
+        
+        unit = ArmyUnit(name, points, move, tough, save, wounds, leader, obj_con)
+
+        unit.display_info()
+
+        return unit 
+
+class Weapon:
+    def __init__ (self, name, type, range, attacks, skill, strength, arm_pen, damage):
+        self.name = name
+        self.type = type
+        self.range = range
+        self.attacks = attacks
+        self.skill = skill
+        self.strength = strength
+        self.arm_pen = arm_pen
+        self.damage = damage
+        
+
+class ArmyList:
+    def __init__ (self):
+        self.unit_database = []
+        self.weapon_database = []
+        self.selected_units = []
+
+    def display_info(self):
+        unit_info = f'''
+              Name: {self.name}
+              Points: {self.points}
+              Movement: {self.move}\"
+              Toughness: {self.tough}
+              Save: {self.save}
+              Wounds: {self.wound}
+              Leadership Score: {self.leader}
+              Objective Control: {self.obj_con}
+              '''
+        return unit_info
+
+    def add_unit_to_database(self, unit):
+        self.unit_database.append(unit)
+
+    def add_unit_to_list(self, unit, quantity=1):
+        for _ in range(quantity):
+            self.selected_units.append(unit)
+
+    def calculate_total_points(self):
+        return sum(int(unit.points) for unit in self.selected_units)
+    
+    def export_to_excel(self, file_name):
+       
+        try:
+            database_df = pd.DataFrame(
+                [{"Name": unit.name, "Points": unit.points, "Movement": unit.move,
+                "Toughness": unit.tough, "Save": unit.save, "Wounds": unit.wound,
+                "Leadership Score": unit.leader, "Objective Control": unit.obj_con}
+                for unit in self.unit_database])
+
+            total_points_row = {"Name": "Total Points", "Points": database_a.calculate_total_points()}
+
+            selected_units_df = pd.DataFrame(
+                [total_points_row] + [{"Name": unit.name, "Points": unit.points, "Movement": unit.move,
+                "Toughness": unit.tough, "Save": unit.save, "Wounds": unit.wound,
+                "Leadership Score": unit.leader, "Objective Control": unit.obj_con}
+                for unit in self.selected_units])
+
+            with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+                
+                database_df.to_excel(writer, sheet_name='Database', index=False)
+                selected_units_df.to_excel(writer, sheet_name='Army List', index=False)
+
+            #writer.save()
+
+            print(f"Export successful! Data written to {file_name}")
+            
+            os.startfile(file_name)
+            
+            #os.system("start EXCEL.exe")
+            
+            #os.system(f"start EXCEL.EXE {file_name}")
+
+        except Exception as e:
+            print(f"Export failed with error: {e}")
+
+def selection_list():
+    print(f'''
+          Please make a selection:
+          1. Create Units
+          2. See Database
+          3. Add Units to Army
+          4. See Army
+          5. Calculate Army points
+          6. Export to Excel and quit program
+          ''')
+    
+    selection = input()
+
+    if selection == "1":
+        create_units()
+    elif selection == "2":
+        print_database()
+    elif selection == "3":
+        cycle_add()
+    elif selection == "4":
+        print_army()
+    elif selection == "5":
+        print_total_points()
+    elif selection == "6":
+        excel_export()
+    else:
+        print(f"Please choose a valid slection")
+        selection_list()
+
+    
+
+def create_units():
+    while True:
+        x = input("Do you want to add a unit to the database?\nEnter y for yes or n for no to return to the selection list: ")
+
+        if x.lower() == "y":
+            created_unit = ArmyUnit.create_entry()
+            add = input("Do you want to add unit to database? ")
+            if add.lower() == "y":
+                database_a.add_unit_to_database(created_unit)
+            else:
+                continue  
+        elif x.lower() == "n":
+            break  
+        else:
+            print("Please input a valid selection")
+
+    selection_list()
+
+
+
+def print_database():
+    for unit in database_a.unit_database:
+        print(unit.display_info())
+    selection_list()
+
+def cycle_add():
+    for unit in database_a.unit_database:
+        print(unit.display_info())
+        add = input("Add unit to army list? ")
+        if add.lower() == "y":
+            number_unit = int(input("How many? "))
+            while number_unit > 0:
+                database_a.add_unit_to_list(unit, number_unit)
+                number_unit -= 1
+    selection_list()
+
+def print_army():
+    for unit in database_a.selected_units:
+        print(unit.display_info())
+    selection_list()
+
+def print_total_points():
+    print(f"Total Points: {database_a.calculate_total_points()}")
+    selection_list()
+
+def excel_export():
+    file_name = (input("What would you like to name the excel file? ") + '.xlsx')
+
+    database_a.export_to_excel(file_name)
+
+database_a = ArmyList()
+
+selection_list()
+
+
+
+
+
