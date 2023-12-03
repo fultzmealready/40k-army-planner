@@ -1,17 +1,17 @@
 import pandas as pd
 import os
-
+import subprocess
 
 class ArmyUnit:
     def __init__ (self, name, points, move, tough, save, wounds, leader, obj_con):
         self.name = name
-        self.points = points
-        self.move = move
-        self.tough = tough
-        self.save = save
-        self.wound = wounds
-        self.leader = leader
-        self.obj_con = obj_con
+        self.points = int(points)
+        self.move = int(move)
+        self.tough = int(tough)
+        self.save = int(save)
+        self.wound = int(wounds)
+        self.leader = int(leader)
+        self.obj_con = int(obj_con)
 
     def display_info(self):
         unit_info = f'''
@@ -46,12 +46,12 @@ class Weapon:
     def __init__ (self, name, type, range, attacks, skill, strength, arm_pen, damage):
         self.name = name
         self.type = type
-        self.range = range
-        self.attacks = attacks
-        self.skill = skill
-        self.strength = strength
-        self.arm_pen = arm_pen
-        self.damage = damage
+        self.range = int(range)
+        self.attacks = int(attacks)
+        self.skill = int(skill)
+        self.strength = int(strength)
+        self.arm_pen = int(arm_pen)
+        self.damage = int(damage)
         
 
 class ArmyList:
@@ -81,7 +81,7 @@ class ArmyList:
             self.selected_units.append(unit)
 
     def calculate_total_points(self):
-        return sum(int(unit.points) for unit in self.selected_units)
+        return sum(unit.points for unit in self.selected_units)
     
     def export_to_excel(self, file_name):
        
@@ -109,11 +109,15 @@ class ArmyList:
 
             print(f"Export successful! Data written to {file_name}")
             
-            os.startfile(file_name)
+            #subprocess.Popen(['start', 'excel', file_name], shell=True)
+            
+            #os.startfile(file_name)
             
             #os.system("start EXCEL.exe")
             
             #os.system(f"start EXCEL.EXE {file_name}")
+
+            #os.system(f'start excel "{os.path.abspath(file_name)}"')
 
         except Exception as e:
             print(f"Export failed with error: {e}")
@@ -155,7 +159,7 @@ def create_units():
 
         if x.lower() == "y":
             created_unit = ArmyUnit.create_entry()
-            add = input("Do you want to add unit to database? ")
+            add = input("Do you want to add unit to database?\nEnter y for yes or n for no to return to the unit creation: ")
             if add.lower() == "y":
                 database_a.add_unit_to_database(created_unit)
             else:
@@ -177,7 +181,7 @@ def print_database():
 def cycle_add():
     for unit in database_a.unit_database:
         print(unit.display_info())
-        add = input("Add unit to army list? ")
+        add = input("Add unit to army list?\nEnter y for yes or n for no to cycle to the next unit: ")
         if add.lower() == "y":
             number_unit = int(input("How many? "))
             while number_unit > 0:
@@ -202,8 +206,3 @@ def excel_export():
 database_a = ArmyList()
 
 selection_list()
-
-
-
-
-
